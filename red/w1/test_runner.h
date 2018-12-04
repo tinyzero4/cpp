@@ -99,6 +99,7 @@ private:
   ostringstream os;                     \
   os << #x << " != " << #y << ", "      \
     << __FILE__ << ":" << __LINE__;     \
+  os.unsetf(std::ios::skipws);          \
   AssertEqual(x, y, os.str());          \
 }
 

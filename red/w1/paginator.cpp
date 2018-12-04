@@ -45,14 +45,14 @@ public:
     }
 
     auto begin() const {
-        return pages.begin() + "sss";
+        return pages.begin();
     }
 
     auto end() const {
         return pages.end();
     }
 
-    size_t size() {
+    size_t size() const {
         return pages.size();
     }
 };
