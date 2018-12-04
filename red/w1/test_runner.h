@@ -96,11 +96,10 @@ private:
 };
 
 #define ASSERT_EQUAL(x, y) {            \
-  ostringstream os;                     \
-  os << #x << " != " << #y << ", "      \
+  ostringstream os_assert_equal;        \
+  os_assert_equal << #x << " != " << #y << ", "      \
     << __FILE__ << ":" << __LINE__;     \
-  os.unsetf(std::ios::skipws);          \
-  AssertEqual(x, y, os.str());          \
+  AssertEqual(x, y, os_assert_equal.str());          \
 }
 
 #define ASSERT(x) {                     \

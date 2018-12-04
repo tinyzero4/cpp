@@ -24,7 +24,7 @@ public:
     }
 
     size_t size() const {
-        return last - first;
+        return distance(last, first);
     }
 };
 
@@ -38,9 +38,9 @@ public:
     Paginator(Iterator begin, Iterator end, size_t page_size) {
         while (begin != end) {
             const size_t diff = end - begin;
-            Iterator page_end = begin + min(diff, page_size);
-            pages.push_back({begin, page_end});
-            begin = page_end;
+            Iterator next_page = next(begin, min(diff, page_size));
+            pages.push_back({begin, next_page});
+            begin = next_page;
         }
     }
 
