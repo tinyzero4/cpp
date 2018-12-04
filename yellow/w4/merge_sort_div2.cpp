@@ -10,7 +10,7 @@ template<typename RandomIt>
 void MergeSort(RandomIt range_begin, RandomIt range_end) {
     if (range_end - range_begin < 2) return;
 
-    vector<typename RandomIt::value_type> left(range_begin, range_begin + (range_end - range_begin) / 2);
+    vector<typename RandocmIt::value_type> left(range_begin, range_begin + (range_end - range_begin) / 2);
     vector<typename RandomIt::value_type> right(range_begin + (range_end - range_begin) / 2, range_end);
     MergeSort(left.begin(), left.end());
     MergeSort(right.begin(), right.end());
