@@ -1,9 +1,3 @@
-#include <iomanip>
-#include <iostream>
-#include <vector>
-#include <set>
-#include <map>
-#include <utility>
 #include "profile.h"
 
 
