@@ -10,48 +10,65 @@ using namespace std;
 template<typename T>
 class SimpleVector {
 public:
+
     SimpleVector() {
         data = nullptr;
-        size_ = 0;
-        capacity_ = 0;
+        size = 0;
+        capacity = 0;
     }
 
     explicit SimpleVector(size_t size) {
         data = new T[size];
-        size_ = 0;
-        capacity_ = size;
+        size = size;
+        capacity = size;
     }
 
-    ~SimpleVector();
+    ~SimpleVector() {
+        delete[] data;
+    }
 
     T &operator[](size_t index) {
-        if (data == nullptr || index > Size()) throw invalid_argument("invalid index");
+        if (Size() == 0 || index >= Size()) throw invalid_argument("invalid index");
         return *(data + index);
     }
 
-    T *begin();
+    T *begin() {
+        return data;
+    }
 
-    T *end();
+    T *end() {
+        return data + Size();
+    }
 
     size_t Size() const {
-        return size_;
+        return size;
     }
 
     size_t Capacity() const {
-        return capacity_;
+        return capacity;
     }
 
     void PushBack(const T &value) {
-        if (Size() == Capacity()) {
-            T* old = data;
-            size_t capacity = (data == nullptr) ? 1 : Capacity() * 2;
-            data = new T[capacity];
-
-        }
+        if (Size() == Capacity()) resize();
+        data[size++] = value;
     }
 
 private:
     T *data;
-    size_t size_;
-    size_t capacity_;
+    size_t size;
+    size_t capacity;
+
+    void resize() {
+        size_t new_capacity = Capacity() == 0 ? 1 : Capacity() * 2;
+
+        T* new_data= new T[new_capacity];
+        if (Capacity() != 0) {
+            copy(begin(), end(), new_data);
+            delete[] data;
+        }
+
+        data = new_data;
+        capacity = new_capacity;
+    }
+
 };
