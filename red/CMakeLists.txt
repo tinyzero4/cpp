@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 project(red)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -gdwarf-3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
 set(CMAKE_CXX_FLAGS "-O0")
 
-add_executable(red w4/text_editor.cpp)
+add_executable(red w4/stats.cpp w4/server_stats.cpp)
