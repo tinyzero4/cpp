@@ -19,7 +19,7 @@ public:
     Id Add(T object) {
         const Id o_id = sequence++;
         items[o_id] = {move(object), 0};
-        priority_queue[0].push_back(o_id);
+        priority_queue[0].insert(o_id);
         ids.insert(o_id);
         return o_id;
     }
@@ -30,45 +30,41 @@ public:
             Id o_id = sequence++;
             *ids_begin = o_id;
             items[o_id] = {move(*range_begin), 0};
-            priority_queue[0].push_back(o_id);
+            priority_queue[0].insert(o_id);
             ids.insert(o_id);
         }
     }
 
-    // Определить, принадлежит ли идентификатор какому-либо
-    // хранящемуся в контейнере объекту
     bool IsValid(Id id) const {
         return ids.find(id) != ids.end();
     }
 
-    // Получить объект по идентификатору
     const T &Get(Id id) const {
         return items.at(id).value;
     }
 
-    // Увеличить приоритет объекта на 1
     void Promote(Id id) {
         PrioritizedValue value = move(items[id]);
-        priority_queue[value.priority].remove(id);
+        priority_queue[value.priority].erase(id);
         ++value.priority;
-        priority_queue[value.priority].push_back(id);
+        priority_queue[value.priority].insert(id);
         max_priority = max(max_priority, value.priority);
         items[id] = move(value);
     }
 
 
-    // Получить объект с максимальным приоритетом и его приоритет
     pair<const T &, int> GetMax() const {
-        const Id &last = priority_queue.at(max_priority).back();
+        const Id &last = *(prev(priority_queue.at(max_priority).end()));
         const T &item = items.at(last).value;
         return {item, max_priority};
     }
 
-    // Аналогично GetMax, но удаляет элемент из контейнера
     pair<T, int> PopMax() {
-        list<Id> &priority_ids = priority_queue.at(max_priority);
-        Id id = priority_ids.front();
-        priority_ids.pop_front();
+        set<Id> &priority_ids = priority_queue.at(max_priority);
+        const auto &max = prev(priority_ids.end());
+
+        Id id = *max;
+        priority_ids.erase(max);
         ids.erase(id);
 
         while (priority_ids.empty() && max_priority > 0) {
@@ -80,19 +76,18 @@ public:
         return {move(value.value), value.priority};
     }
 
-
 private:
     Id sequence = 0;
     int max_priority = 0;
     map<Id, PrioritizedValue> items;
     set<Id> ids;
-    map<int, list<Id>> priority_queue;
+    map<int, set<Id>> priority_queue;
 };
 
 
 class StringNonCopyable : public string {
 public:
-    using string::string;  // Позволяет использовать конструкторы строки
+    using string::string;
     StringNonCopyable(const StringNonCopyable &) = delete;
 
     StringNonCopyable(StringNonCopyable &&) = default;
@@ -114,26 +109,31 @@ void TestNoCopy() {
     }
     strings.Promote(yellow_id);
     {
+        const auto max = strings.GetMax();
+        ASSERT_EQUAL(max.first, "red");
+        ASSERT_EQUAL(max.second, 2);
         const auto item = strings.PopMax();
         ASSERT_EQUAL(item.first, "red");
         ASSERT_EQUAL(item.second, 2);
     }
     {
+        const auto max = strings.GetMax();
+        ASSERT_EQUAL(max.first, "yellow");
+        ASSERT_EQUAL(max.second, 2);
+
         const auto item = strings.PopMax();
         ASSERT_EQUAL(item.first, "yellow");
         ASSERT_EQUAL(item.second, 2);
     }
     {
+        const auto max = strings.GetMax();
+        ASSERT_EQUAL(max.first, "white");
+        ASSERT_EQUAL(max.second, 0);
         const auto item = strings.PopMax();
         ASSERT_EQUAL(item.first, "white");
         ASSERT_EQUAL(item.second, 0);
     }
 
-}
-
-void printMax(const PriorityCollection<StringNonCopyable> &container) {
-    const pair<const StringNonCopyable &, int> &pair = container.GetMax();
-    cout << pair.first << " - " << pair.second << endl;
 }
 
 void TestContainer() {
@@ -142,37 +142,29 @@ void TestContainer() {
     size_t id_1 = container.Add(StringNonCopyable("1"));
     size_t id_2 = container.Add(StringNonCopyable("2"));
 
-    printMax(container);
-//    auto max1 = container.PopMax();
-//    cout << max1.first << " - " << max1.second << endl;
+    container.Promote(id_1);
+    container.Promote(id_2);
 
-    container.Promote(0);
+    {
+        const auto max = container.GetMax();
+        ASSERT_EQUAL(max.first, "2");
+        ASSERT_EQUAL(max.second, 1);
+    }
 
-    cout << container.GetMax().first << " - " << container.GetMax().second << endl;
-    auto max1 = container.PopMax();
-    cout << max1.first << " - " << max1.second << " ";
-    cout << container.GetMax().first << " - " << container.GetMax().second << endl;
+    container.PopMax();
+    container.PopMax();
 
+    id_1 = container.Add(StringNonCopyable("1"));
+    id_2 = container.Add(StringNonCopyable("2"));
 
+    container.Promote(id_2);
+    container.Promote(id_1);
 
-    /**
-     * 1. {"1", 0}, {"2", 0}
-
-Promote("1"): {"2", 0}, {"1", 1}
-
-Promote("2"): {"1", 1}, {"2", 1}
-
-GetMax(): {"2", 1}
-
-
-     */
-
-
-
-
-
-
-
+    {
+        const auto max = container.GetMax();
+        ASSERT_EQUAL(max.first, "2");
+        ASSERT_EQUAL(max.second, 1);
+    }
 }
 
 int main() {

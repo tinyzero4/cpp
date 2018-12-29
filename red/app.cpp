@@ -5,19 +5,17 @@
 #include <cstring>
 #include <utility>
 #include <vector>
+#include <list>
 
 using namespace std;
 
 int main() {
-    std::vector<int> v;
+    list<int> v;
     v.push_back(1);
     v.push_back(2);
     v.push_back(3);
 
-    std::back_insert_iterator<std::vector<int>>  it(v);
-
-    std::cout << *it;
-    it = 99;
+    cout << v.back() << " " << v.front() << endl;
 
     for (auto const & i : v)
         std::cout << i << " " ;
