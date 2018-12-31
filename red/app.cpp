@@ -6,18 +6,16 @@
 #include <utility>
 #include <vector>
 #include <list>
-
-using namespace std;
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 int main() {
-    list<int> v;
-    v.push_back(1);
-    v.push_back(2);
-    v.push_back(3);
-
-    cout << v.back() << " " << v.front() << endl;
-
-    for (auto const & i : v)
-        std::cout << i << " " ;
-
+    using namespace std;
+    string sentence = "And I feel fine...";
+    istringstream iss(sentence);
+    copy(istream_iterator<string>(iss),
+         istream_iterator<string>(),
+         ostream_iterator<string>(cout, "\n"));
 }

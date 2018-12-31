@@ -12,8 +12,8 @@
 using namespace std;
 
 // Вспомогательная функция, позволяющая «зациклить» список
-template <typename Container, typename ForwardIt>
-ForwardIt LoopIterator(Container& container, ForwardIt pos) {
+template<typename Container, typename ForwardIt>
+ForwardIt LoopIterator(Container &container, ForwardIt pos) {
     return pos == container.end() ? container.begin() : pos;
 }
 
