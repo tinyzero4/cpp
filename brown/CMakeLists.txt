@@ -7,6 +7,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Wall -Wfatal-errors -pthread -std=c
 
 find_package(Threads)
 
-add_executable(red w2/4/comment_server.cpp)
+add_executable(red w3/lazy_value.cpp)
 
 target_link_libraries(red ${CMAKE_THREAD_LIBS_INIT})
