@@ -1,33 +1,27 @@
 #include "test_runner.h"
 
 #include <functional>
+#include <optional>
 
 using namespace std;
 
 template<typename T>
 class LazyValue {
 public:
-    explicit LazyValue(std::function<T()> init) {
-        initializer = move(init);
-        initialized = false;
-    }
+    explicit LazyValue(const std::function<T()> init): init_(std::move(init)) {}
 
     bool HasValue() const {
-        return initialized;
+        return value.has_value();
     }
 
-    const T &Get() const {
-        if (!initialized) {
-            value = initializer();
-            initialized = true;
-        }
-        return value;
+    const T& Get() const {
+        if (!value) value = init_();
+        return *value;
     }
 
 private:
-    mutable T value;
-    mutable bool initialized;
-    std::function<T()> initializer;
+    mutable std::optional<T> value;
+    std::function<T()> init_;
 };
 
 void UseExample() {
@@ -51,6 +45,31 @@ void TestInitializerIsntCalled() {
     }
     ASSERT(!called);
 }
+
+void DoSomething(const vector<string>& v) {
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        const std::string &s = *it;
+        cout << s;
+    }
+
+    string string1;
+    auto l = [string1]() {
+        string a = string1;
+    };
+}
+
+
+class MyClass {
+    void Foo() {
+        MyClass* p = this;
+        cout << p;
+    }
+
+    void Bar() const {
+        const MyClass* const p = this;
+        cout << p;
+    }
+};
 
 int main() {
     TestRunner tr;
